@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="Presentación SenNet del proyecto CDTI E²S. Acceso al contenido mediante contraseña.">
+  <title>CDTI · E²S — Presentación SenNet</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+  <section id="access" class="access" aria-labelledby="access-heading">
+    <form id="unlock-form" class="access-form">
+      <p class="access-brand">SenNet <span>CDTI · E²S</span></p>
+      <h1 id="access-heading">Presentación<br>del proyecto</h1>
+      <p class="access-intro">Introduce la contraseña para abrir la presentación.</p>
+      <label for="presentation-password">Contraseña</label>
+      <input id="presentation-password" type="password" autocomplete="current-password" required spellcheck="false" aria-describedby="access-message">
+      <button id="unlock-button" type="submit">Abrir presentación</button>
+      <p id="access-message" class="access-message" role="status" aria-live="polite"></p>
+      <p class="access-footer">El contenido se descifra en este navegador.</p>
+    </form>
+  </section>
+  <a class="skip-link" href="#controls">Ir a los controles</a>
+  <main id="presentation" aria-label="Presentación CDTI E²S" hidden>
+    <div id="stage" class="stage" tabindex="-1">
+      <img id="slide" width="1280" height="720" alt="" draggable="false">
+      <p id="load-error" class="error" hidden>No se ha podido cargar esta diapositiva. Comprueba la conexión y pulsa Reintentar. <button id="retry" type="button">Reintentar</button></p>
+      <h1 id="slide-title" class="sr-only"></h1>
+      <div id="slide-description" class="sr-only"></div>
+    </div>
+    <footer id="controls" class="toolbar" aria-label="Controles de la presentación">
+      <div class="identity"><strong>SenNet</strong><span>CDTI · E²S</span></div>
+      <div class="navigation">
+        <button id="previous" type="button" aria-label="Diapositiva anterior" title="Anterior (flecha izquierda)">←</button>
+        <span id="counter" class="counter" aria-live="polite" aria-atomic="true">1 / 11</span>
+        <button id="next" type="button" aria-label="Diapositiva siguiente" title="Siguiente (flecha derecha)">→</button>
+      </div>
+      <div class="tools">
+        <button id="open-index" type="button" aria-expanded="false" aria-controls="slide-index">Índice</button>
+        <button id="fullscreen" type="button" title="Pantalla completa (F)">Pantalla completa</button>
+        <button id="lock" type="button">Bloquear</button>
+        <button id="help-button" type="button" aria-expanded="false" aria-controls="help" aria-label="Ayuda de navegación">?</button>
+      </div>
+    </footer>
+    <div id="progress" class="progress" aria-hidden="true"></div>
+  </main>
+  <section id="slide-index" class="overlay" role="dialog" aria-modal="true" aria-labelledby="index-heading" hidden>
+    <div class="overlay-heading"><h2 id="index-heading">Diapositivas</h2><button id="close-index" type="button">Cerrar</button></div>
+    <ol id="index-list" class="index-list"></ol>
+  </section>
+  <section id="help" class="help" role="dialog" aria-modal="true" aria-labelledby="help-heading" hidden>
+    <div class="overlay-heading"><h2 id="help-heading">Cómo navegar</h2><button id="close-help" type="button">Cerrar</button></div>
+    <p><kbd>←</kbd> <kbd>→</kbd> o <kbd>Re Pág</kbd> <kbd>Av Pág</kbd>: cambiar de diapositiva.</p>
+    <p><kbd>Inicio</kbd> / <kbd>Fin</kbd>: primera / última. <kbd>F</kbd>: pantalla completa. <kbd>I</kbd>: índice.</p>
+    <p>En móvil puedes deslizar a izquierda o derecha. En la TV, usa los botones o un teclado/mando compatible.</p>
+    <p>Para presentar desde el PC, utiliza la TV como pantalla extendida o duplicada. Esta web no sincroniza dispositivos distintos.</p>
+  </section>
+  <p id="announcement" class="sr-only" aria-live="polite"></p>
+  <noscript><p class="no-script">Activa JavaScript para desbloquear y visualizar esta presentación.</p></noscript>
+  <script src="viewer.js"></script>
+  <script src="vault.js"></script>
+</body>
+</html>

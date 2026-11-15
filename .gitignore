@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
+private/
+source/
+*.pptx
+*.pdf
+*.png
+*.jpg
+*.jpeg
+slides.json
+slides.js
+*.zip
+.env*
