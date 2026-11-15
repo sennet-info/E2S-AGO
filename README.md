@@ -2,6 +2,8 @@
 
 Visor web de una presentación, preparado para GitHub Pages y navegadores de PC o TV compatibles.
 
+**[Abrir la presentación](https://sennet-info.github.io/E2S-AGO/)**
+
 ## Acceso al contenido
 
 El repositorio es público. Las diapositivas, sus títulos y su texto accesible se guardan cifrados. La contraseña se solicita en el navegador y no se incluye en el código ni se envía a un servidor de autenticación.
@@ -12,7 +14,7 @@ Este mecanismo no proporciona cuentas de usuario, límites de intentos ni revoca
 
 ## Publicación con GitHub Pages
 
-1. Subir los archivos a la raíz de un repositorio público `CDTI-E2S-Presentacion`.
+1. Subir los archivos a la raíz de un repositorio público `E2S-AGO`.
 2. Abrir **Settings → Pages → Build and deployment** y seleccionar **Deploy from a branch**.
 3. Seleccionar `main`, carpeta **/(root)**, y pulsar **Save**.
 4. Esperar a que GitHub confirme el despliegue. La URL final aparecerá en esa sección.
