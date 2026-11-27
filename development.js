@@ -24,10 +24,10 @@
     var wrapper = element('div', 'architecture-wrap');
     var diagram = element('div', 'architecture-map');
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 1000 460'); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('viewBox', '0 0 1000 620'); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('aria-hidden', 'true');
     var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', 'M170 75H500H830M170 230H500H830M170 390V230M500 390V230M830 390V230');
-    path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#466078'); path.setAttribute('stroke-width', '2');
+    path.setAttribute('d', 'M170 75H500H830M170 230H500H830M500 230V400H170M500 400H830M500 400V550');
+    path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#b1b1b0'); path.setAttribute('stroke-width', '2');
     svg.appendChild(path); diagram.appendChild(svg);
     for (var i = 0; i < slide.components.length; i++) {
       (function (component) {
@@ -165,7 +165,7 @@
     }
     for (var s = 0; s < data.slides.length; s++) {
       var components = data.slides[s].components || [];
-      for (var c = 0; c < components.length; c++) if (!ids[components[c].target] || ['cpu', 'spe', 'radio', 'io', 'security', 'power', 'case'].indexOf(components[c].slot) < 0) throw new Error('invalid');
+      for (var c = 0; c < components.length; c++) if (!ids[components[c].target] || ['cpu', 'spe', 'radio', 'io', 'security', 'power', 'case', 'wifi', 'zigbee'].indexOf(components[c].slot) < 0) throw new Error('invalid');
     }
   }
   window.DevelopmentPresentation = {
