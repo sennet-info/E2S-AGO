@@ -66,9 +66,9 @@ node encrypt.mjs CARPETA_PRIVADA CARPETA_PUBLICA
 
 El programa solicita la contraseña sin mostrarla. Solo copiará al destino archivos cifrados y la configuración pública. Al recibir la contraseña por stdin, elimina únicamente el salto de línea final.
 
-Si el destino contiene `development.bin`, conservar también `development.json` en la carpeta privada. El programa cifra los dos recorridos con la nueva clave y exige ese archivo para evitar que el esquema quede inaccesible al regenerar la presentación.
+Si el destino contiene `development.bin`, conservar también `development.json` en la carpeta privada. El programa cifra los dos recorridos con la nueva clave y exige ese archivo para evitar que el esquema quede inaccesible al regenerar la presentación. Para cada ilustración del esquema, conservar su PNG en esa misma carpeta: una referencia `visual-nombre.bin` requiere el original `visual-nombre.png`.
 
-Revisar y publicar juntos todos los `slide-*.bin`, `manifest.bin`, `development.bin` y `vault.json` generados. Nunca subir las imágenes originales, `slides.json`, `development.json`, notas del presentador, contraseñas ni el archivo editable original. Cambiar la contraseña de una nueva versión no invalida copias antiguas del contenido cifrado y de su clave que ya se hubieran obtenido.
+Revisar y publicar juntos todos los `slide-*.bin`, `visual-*.bin`, `manifest.bin`, `development.bin` y `vault.json` generados. Nunca subir las imágenes originales, `slides.json`, `development.json`, notas del presentador, contraseñas ni el archivo editable original. Cambiar la contraseña de una nueva versión no invalida copias antiguas del contenido cifrado y de su clave que ya se hubieran obtenido.
 
 ### Actualizar solo el esquema de desarrollo
 
@@ -80,6 +80,6 @@ Con el archivo privado actualizado, ejecutar:
 node encrypt-document.mjs CARPETA_PUBLICA JSON_PRIVADO
 ```
 
-El programa solicita la contraseña, verifica que abre la presentación existente y sustituye únicamente `development.bin`. No cambia la contraseña ni vuelve a cifrar las diapositivas originales. Publicar el archivo generado junto con cualquier cambio necesario en el visor.
+El programa solicita la contraseña, verifica que abre la presentación existente y actualiza `development.bin` y las ilustraciones que referencia. No cambia la contraseña ni vuelve a cifrar las diapositivas originales. Conservar los PNG originales junto al JSON privado, con el mismo nombre de su referencia cifrada y extensión `.png`. Publicar juntos los archivos generados y cualquier cambio necesario en el visor. Las ilustraciones se descifran solo tras desbloquear el contenido y se retiran al bloquear la sesión.
 
 Las marcas y el contenido de la presentación conservan sus derechos. La publicación de este repositorio no concede por defecto una licencia de uso de esos materiales.

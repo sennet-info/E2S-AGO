@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var deck = null, current = 0, listeners = [], touch = null;
+  var deck = null, current = 0, listeners = [], touch = null, renderVersion = 0;
   var stage = document.getElementById('development-stage');
   var outline = document.getElementById('development-outline');
   var previous = document.getElementById('development-previous');
@@ -61,6 +61,32 @@
     }
     wrapper.appendChild(list); return wrapper;
   }
+  function renderFigure(figure, version) {
+    var wrapper = element('figure', 'development-figure');
+    var media = element('div', 'figure-media');
+    var img = element('img'); img.alt = figure.alt; img.hidden = true;
+    var status = element('p', 'figure-status', 'Cargando imagen…');
+    status.setAttribute('role', 'status');
+    var retry = element('button', 'figure-retry', 'Reintentar'); retry.type = 'button'; retry.hidden = true;
+    function active() { return deck && renderVersion === version; }
+    function failed() {
+      if (!active()) return;
+      img.hidden = true; status.hidden = false; status.textContent = 'No se ha podido cargar la imagen.'; retry.hidden = false;
+    }
+    function load() {
+      if (!active()) return;
+      retry.hidden = true; status.hidden = false; status.textContent = 'Cargando imagen…';
+      window.DeckVault.getImage(figure).then(function (url) {
+        if (!active()) return;
+        img.onload = function () { if (active()) { img.hidden = false; status.hidden = true; } };
+        img.onerror = failed; img.src = url;
+      }).catch(failed);
+    }
+    retry.onclick = load;
+    media.appendChild(img); media.appendChild(status); media.appendChild(retry); wrapper.appendChild(media);
+    wrapper.appendChild(element('figcaption', '', figure.caption));
+    load(); return wrapper;
+  }
   function renderPanels(panels) {
     var container = element('div', 'development-panels');
     for (var i = 0; i < panels.length; i++) {
@@ -108,6 +134,7 @@
   }
   function show(index) {
     if (!deck) return;
+    renderVersion++;
     current = Math.max(0, Math.min(deck.slides.length - 1, index));
     var slide = deck.slides[current]; stage.textContent = '';
     var article = element('article', 'development-slide layout-' + slide.layout);
@@ -116,6 +143,7 @@
     header.appendChild(element('h1', '', slide.title));
     header.appendChild(element('p', 'slide-intro', slide.intro)); article.appendChild(header);
     if (slide.layout === 'architecture') article.appendChild(renderMap(slide));
+    if (slide.figure) article.appendChild(renderFigure(slide.figure, renderVersion));
     if (slide.flow) article.appendChild(renderFlow(slide.flow));
     if (slide.panels) article.appendChild(renderPanels(slide.panels));
     if (slide.table) article.appendChild(renderTable(slide.table));
@@ -147,6 +175,7 @@
     } catch (_error) { document.getElementById('announcement').textContent = 'Este navegador no permite activar la pantalla completa.'; }
   }
   function close() {
+    renderVersion++;
     for (var i = 0; i < listeners.length; i++) listeners[i](); listeners = [];
     deck = null; touch = null; stage.textContent = ''; outline.textContent = '';
     document.getElementById('development-deck-title').textContent = '';
@@ -162,6 +191,7 @@
       if (!/^[a-z0-9-]+$/.test(slide.id) || ids[slide.id] || typeof slide.title !== 'string' || typeof slide.label !== 'string' || typeof slide.intro !== 'string' || ['architecture', 'detail', 'table', 'phases'].indexOf(slide.layout) < 0) throw new Error('invalid');
       ids[slide.id] = true;
       if (slide.layout === 'architecture' && !Array.isArray(slide.components)) throw new Error('invalid');
+      if (slide.figure && (typeof slide.figure.src !== 'string' || !/^visual-[a-z0-9-]+\.bin$/.test(slide.figure.src) || typeof slide.figure.alt !== 'string' || !slide.figure.alt.trim() || typeof slide.figure.caption !== 'string')) throw new Error('invalid');
     }
     for (var s = 0; s < data.slides.length; s++) {
       var components = data.slides[s].components || [];

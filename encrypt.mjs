@@ -63,13 +63,25 @@ try {
     slides.push({src: name, title: String(original.title || 'Diapositiva ' + (i + 1)), text: String(original.text || '')});
   }
   await encrypt('manifest.bin', Buffer.from(JSON.stringify({version: 1, slides}), 'utf8'));
-  if (developmentDocument) await encrypt('development.bin', Buffer.from(JSON.stringify(developmentDocument), 'utf8'));
+  if (developmentDocument) {
+    const figures = new Set();
+    for (const slide of developmentDocument.slides) {
+      if (!slide.figure) continue;
+      const name = slide.figure.src;
+      if (typeof name !== 'string' || !/^visual-[a-z0-9-]+\.bin$/.test(name)) throw new Error('Referencia de imagen inválida');
+      if (figures.has(name)) continue;
+      const bytes = await fs.readFile(path.join(sourceDirectory, name.replace(/\.bin$/, '.png')));
+      if (bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') throw new Error('Se requiere PNG');
+      await encrypt(name, bytes); figures.add(name);
+    }
+    await encrypt('development.bin', Buffer.from(JSON.stringify(developmentDocument), 'utf8'));
+  }
   const config = {version: 1, kdf: 'PBKDF2', hash: 'SHA-256', iterations: 600000, salt: salt.toString('base64'), manifest: 'manifest.bin'};
   await fs.writeFile(path.join(temporary, 'vault.json'), JSON.stringify(config, null, 2) + '\n');
   names.push('vault.json');
   await fs.mkdir(outputDirectory, {recursive: true});
   for (const name of await fs.readdir(outputDirectory)) {
-    if (/^slide-[0-9]{2,3}\.bin$/.test(name) && !names.includes(name)) await fs.unlink(path.join(outputDirectory, name));
+    if (/^(?:slide-[0-9]{2,3}|visual-[a-z0-9-]+)\.bin$/.test(name) && !names.includes(name)) await fs.unlink(path.join(outputDirectory, name));
   }
   for (const name of names) await fs.copyFile(path.join(temporary, name), path.join(outputDirectory, name));
   console.log(JSON.stringify({slides: slides.length, files: names.length, output: outputDirectory}));
