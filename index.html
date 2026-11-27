@@ -4,24 +4,47 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#101820">
-  <meta name="description" content="Presentación SenNet del proyecto CDTI E²S. Acceso al contenido mediante contraseña.">
-  <title>CDTI · E²S — Presentación SenNet</title>
+  <meta name="description" content="Presentación y esquema general de desarrollo del proyecto CDTI E²S de SenNet. Acceso mediante contraseña.">
+  <title>CDTI · E²S — SenNet</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="viewer.css">
+  <link rel="stylesheet" href="viewer.css?v=20261127">
+  <link rel="stylesheet" href="development.css?v=20261127">
 </head>
 <body>
   <section id="access" class="access" aria-labelledby="access-heading">
     <form id="unlock-form" class="access-form">
       <p class="access-brand">SenNet <span>CDTI · E²S</span></p>
-      <h1 id="access-heading">Presentación<br>del proyecto</h1>
-      <p class="access-intro">Introduce la contraseña para abrir la presentación.</p>
+      <h1 id="access-heading">Explora<br>el proyecto</h1>
+      <p class="access-intro">Introduce la contraseña para acceder a la presentación y al esquema general de desarrollo.</p>
       <label for="presentation-password">Contraseña</label>
       <input id="presentation-password" type="password" autocomplete="current-password" required spellcheck="false" aria-describedby="access-message">
-      <button id="unlock-button" type="submit">Abrir presentación</button>
+      <button id="unlock-button" type="submit">Entrar</button>
       <p id="access-message" class="access-message" role="status" aria-live="polite"></p>
       <p class="access-footer">El contenido se descifra en este navegador.</p>
     </form>
   </section>
+  <main id="content-hub" class="content-hub" aria-labelledby="hub-heading" hidden>
+    <div class="hub-wrap">
+      <header class="hub-header"><p class="access-brand">SenNet <span>CDTI · E²S</span></p><button id="hub-lock" type="button">Bloquear</button></header>
+      <p class="eyebrow">Proyecto E²S</p>
+      <h1 id="hub-heading" tabindex="-1">Elige cómo explorar<br>el proyecto</h1>
+      <p class="hub-intro">La visión del proyecto y las partes que componen el equipo, en dos recorridos.</p>
+      <div class="hub-choices">
+        <button id="choose-presentation" class="hub-choice" type="button">
+          <svg class="choice-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="7" y="8" width="34" height="25" rx="3"/><path d="M24 33v8M15 41h18M15 17h18M15 24h11"/></svg>
+          <span class="choice-kind">Visión del proyecto</span><strong>Presentación</strong>
+          <span class="choice-description">Contexto, solución propuesta y proyección del producto.</span><span class="choice-action">Abrir presentación</span>
+        </button>
+        <button id="choose-development" class="hub-choice hub-choice-development" type="button">
+          <svg class="choice-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="12" y="12" width="24" height="24" rx="3"/><rect x="19" y="19" width="10" height="10" rx="1"/><path d="M18 5v7M24 5v7M30 5v7M18 36v7M24 36v7M30 36v7M5 18h7M5 24h7M5 30h7M36 18h7M36 24h7M36 30h7"/></svg>
+          <span class="choice-kind">Arquitectura del equipo</span><strong>Esquema general<br> de desarrollo</strong>
+          <span class="choice-description">Explora los bloques internos, su relación y el trabajo de desarrollo.</span><span class="choice-action">Explorar el esquema</span>
+        </button>
+      </div>
+      <p id="hub-message" class="hub-message" role="status" aria-live="polite"></p>
+      <p class="hub-footnote">Puedes cambiar de recorrido desde el menú principal.</p>
+    </div>
+  </main>
   <a class="skip-link" href="#controls">Ir a los controles</a>
   <main id="presentation" aria-label="Presentación CDTI E²S" hidden>
     <div id="stage" class="stage" tabindex="-1">
@@ -38,6 +61,7 @@
         <button id="next" type="button" aria-label="Diapositiva siguiente" title="Siguiente (flecha derecha)">→</button>
       </div>
       <div class="tools">
+        <button id="presentation-home" type="button">Menú principal</button>
         <button id="open-index" type="button" aria-expanded="false" aria-controls="slide-index">Índice</button>
         <button id="fullscreen" type="button" title="Pantalla completa (F)">Pantalla completa</button>
         <button id="lock" type="button">Bloquear</button>
@@ -45,6 +69,23 @@
       </div>
     </footer>
     <div id="progress" class="progress" aria-hidden="true"></div>
+  </main>
+  <main id="development" class="development" aria-label="Esquema general de desarrollo" hidden>
+    <header class="development-header">
+      <div class="development-brand"><strong>SenNet</strong><span>CDTI · E²S</span></div>
+      <div class="development-heading"><span>Esquema general de desarrollo</span><strong id="development-deck-title"></strong></div>
+      <span class="proposal-badge">Arquitectura propuesta</span>
+    </header>
+    <div class="development-body">
+      <nav class="development-outline" aria-label="Partes del equipo"><p>Contenido</p><ol id="development-outline"></ol></nav>
+      <div id="development-stage" class="development-stage" tabindex="-1"></div>
+    </div>
+    <footer class="development-toolbar" aria-label="Controles del esquema">
+      <button id="development-home" type="button">Menú principal</button>
+      <div class="development-navigation"><button id="development-previous" type="button">Anterior</button><span id="development-counter" class="counter" aria-live="polite" aria-atomic="true"></span><button id="development-next" type="button">Siguiente</button></div>
+      <div class="development-tools"><button id="development-map" type="button">Vista general</button><button id="development-fullscreen" type="button">Pantalla completa</button><button id="development-lock" type="button">Bloquear</button></div>
+    </footer>
+    <div id="development-progress" class="development-progress" aria-hidden="true"></div>
   </main>
   <section id="slide-index" class="overlay" role="dialog" aria-modal="true" aria-labelledby="index-heading" hidden>
     <div class="overlay-heading"><h2 id="index-heading">Diapositivas</h2><button id="close-index" type="button">Cerrar</button></div>
@@ -59,7 +100,8 @@
   </section>
   <p id="announcement" class="sr-only" aria-live="polite"></p>
   <noscript><p class="no-script">Activa JavaScript para desbloquear y visualizar esta presentación.</p></noscript>
-  <script src="viewer.js"></script>
-  <script src="vault.js"></script>
+  <script src="viewer.js?v=20261127"></script>
+  <script src="development.js?v=20261127"></script>
+  <script src="vault.js?v=20261127"></script>
 </body>
 </html>

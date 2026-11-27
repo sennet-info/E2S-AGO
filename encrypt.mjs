@@ -24,6 +24,17 @@ const outputDirectory = path.resolve(process.argv[3] || '.');
 if (!process.argv[2]) throw new Error('Uso: node encrypt.mjs CARPETA_PRIVADA [CARPETA_PUBLICA]');
 const sourceSlides = JSON.parse(await fs.readFile(path.join(sourceDirectory, 'slides.json'), 'utf8'));
 if (!Array.isArray(sourceSlides) || !sourceSlides.length || sourceSlides.length > 200) throw new Error('slides.json inválido');
+let developmentDocument = null;
+try {
+  developmentDocument = JSON.parse(await fs.readFile(path.join(sourceDirectory, 'development.json'), 'utf8'));
+  if (developmentDocument.version !== 1 || typeof developmentDocument.title !== 'string' || !Array.isArray(developmentDocument.slides) || !developmentDocument.slides.length || developmentDocument.slides.length > 80) throw new Error('development.json inválido');
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+  try {
+    await fs.access(path.join(outputDirectory, 'development.bin'));
+    throw new Error('Se requiere development.json en la carpeta privada para renovar la clave de ambos recorridos.');
+  } catch (check) { if (check.code !== 'ENOENT') throw check; }
+}
 let password = await readPassword();
 if (!password) throw new Error('La contraseña no puede estar vacía');
 const salt = randomBytes(16);
@@ -52,6 +63,7 @@ try {
     slides.push({src: name, title: String(original.title || 'Diapositiva ' + (i + 1)), text: String(original.text || '')});
   }
   await encrypt('manifest.bin', Buffer.from(JSON.stringify({version: 1, slides}), 'utf8'));
+  if (developmentDocument) await encrypt('development.bin', Buffer.from(JSON.stringify(developmentDocument), 'utf8'));
   const config = {version: 1, kdf: 'PBKDF2', hash: 'SHA-256', iterations: 600000, salt: salt.toString('base64'), manifest: 'manifest.bin'};
   await fs.writeFile(path.join(temporary, 'vault.json'), JSON.stringify(config, null, 2) + '\n');
   names.push('vault.json');

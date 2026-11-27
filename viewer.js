@@ -1,7 +1,13 @@
 window.startPresentation = function (slides) {
   'use strict';
+  if (window.stopPresentation) window.stopPresentation();
   if (!slides.length) return;
   var current = 0, hideTimer, touchX = null, touchY = null, requestNumber = 0;
+  var active = true, listeners = [];
+  function listen(target, type, handler, options) {
+    target.addEventListener(type, handler, options);
+    listeners.push(function () { target.removeEventListener(type, handler, options); });
+  }
   var image = document.getElementById('slide');
   var stage = document.getElementById('stage');
   var previous = document.getElementById('previous');
@@ -14,6 +20,7 @@ window.startPresentation = function (slides) {
   var error = document.getElementById('load-error');
   var indexItems = [];
   var thumbnails = [];
+  document.getElementById('index-list').textContent = '';
   function announce(text) { document.getElementById('announcement').textContent = text; }
   function fullElement() { return document.fullscreenElement || document.webkitFullscreenElement; }
   function reveal() {
@@ -31,10 +38,10 @@ window.startPresentation = function (slides) {
     image.onload = function () { if (number === requestNumber) { error.hidden = true; image.style.visibility = 'visible'; } };
     image.onerror = function () { if (number === requestNumber) error.hidden = false; };
     window.DeckVault.getImage(slide).then(function (url) {
-      if (number !== requestNumber) return;
+      if (!active || number !== requestNumber) return;
       if (image.src === url && image.complete && image.naturalWidth) image.style.visibility = 'visible';
       else image.src = url;
-    }).catch(function () { if (number === requestNumber) error.hidden = false; });
+    }).catch(function () { if (active && number === requestNumber) error.hidden = false; });
     image.alt = 'Diapositiva ' + (current + 1) + ': ' + slide.title;
     document.getElementById('slide-title').textContent = slide.title;
     document.getElementById('slide-description').textContent = slide.text;
@@ -63,7 +70,7 @@ window.startPresentation = function (slides) {
     menu.hidden = false; indexButton.setAttribute('aria-expanded', 'true');
     for (var t = 0; t < thumbnails.length; t++) {
       (function (index) {
-        window.DeckVault.getImage(slides[index]).then(function (url) { thumbnails[index].src = url; }).catch(function () {});
+        window.DeckVault.getImage(slides[index]).then(function (url) { if (active) thumbnails[index].src = url; }).catch(function () {});
       }(t));
     }
     reveal(); indexItems[current].focus();
@@ -116,12 +123,13 @@ window.startPresentation = function (slides) {
   document.getElementById('close-index').onclick = closeMenu;
   document.getElementById('close-help').onclick = closeHelp;
   fullButton.onclick = toggleFullscreen;
-  document.getElementById('lock').onclick = function () { window.DeckVault.close(); window.location.reload(); };
-  document.addEventListener('fullscreenchange', fullscreenChanged);
-  document.addEventListener('webkitfullscreenchange', fullscreenChanged);
-  document.addEventListener('mousemove', reveal);
-  document.addEventListener('touchstart', reveal, {passive: true});
-  document.addEventListener('keydown', function (e) {
+  document.getElementById('lock').onclick = function () { window.DeckVault.lock(); };
+  document.getElementById('presentation-home').onclick = function () { window.DeckVault.showHub(); };
+  listen(document, 'fullscreenchange', fullscreenChanged);
+  listen(document, 'webkitfullscreenchange', fullscreenChanged);
+  listen(document, 'mousemove', reveal);
+  listen(document, 'touchstart', reveal, {passive: true});
+  listen(document, 'keydown', function (e) {
     var key = e.key || e.keyCode;
     if (key === 'Escape' || key === 27) { if (!help.hidden) closeHelp(); else if (!menu.hidden) closeMenu(); return; }
     if (!help.hidden || !menu.hidden) {
@@ -144,16 +152,28 @@ window.startPresentation = function (slides) {
     else if (key === 'i' || key === 'I' || key === 73) openMenu();
     else reveal();
   });
-  stage.addEventListener('touchstart', function (e) {
+  listen(stage, 'touchstart', function (e) {
     if (e.touches.length === 1) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }
   }, {passive: true});
-  stage.addEventListener('touchend', function (e) {
+  listen(stage, 'touchend', function (e) {
     if (touchX === null || !e.changedTouches.length) return;
     var dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY;
     if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) show(current + (dx < 0 ? 1 : -1));
     touchX = null; touchY = null;
   }, {passive: true});
-  stage.addEventListener('touchcancel', function () { touchX = null; touchY = null; });
-  window.addEventListener('hashchange', readHash);
+  listen(stage, 'touchcancel', function () { touchX = null; touchY = null; });
+  listen(window, 'hashchange', readHash);
+  window.stopPresentation = function () {
+    active = false; requestNumber++; window.clearTimeout(hideTimer);
+    for (var n = 0; n < listeners.length; n++) listeners[n]();
+    menu.hidden = true; help.hidden = true;
+    indexButton.setAttribute('aria-expanded', 'false'); helpButton.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('controls-hidden');
+    image.onload = null; image.onerror = null; image.removeAttribute('src'); image.alt = '';
+    document.getElementById('slide-title').textContent = '';
+    document.getElementById('slide-description').textContent = '';
+    document.getElementById('index-list').textContent = '';
+    window.stopPresentation = null;
+  };
   readHash();
 };

@@ -11,5 +11,7 @@ source/
 *.jpeg
 slides.json
 slides.js
+development.json
+*-source.json
 *.zip
 .env*
